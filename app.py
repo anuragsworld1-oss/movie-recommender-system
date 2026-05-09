@@ -5,13 +5,11 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 
-
 st.set_page_config(
     page_title="Movie Recommender",
     page_icon="🎬",
     layout="wide"
 )
-
 
 st.markdown(
     """
@@ -23,38 +21,62 @@ st.markdown(
     h1 {
         text-align: center;
         color: white;
-        font-size: 50px;
+        font-size: 55px;
+        margin-bottom: 0;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #AAAAAA;
+        font-size: 18px;
+        margin-bottom: 30px;
     }
 
     .stButton>button {
         width: 100%;
-        border-radius: 10px;
-        height: 3em;
-        background-color: #E50914;
+        border-radius: 12px;
+        height: 3.2em;
+        background: linear-gradient(to right, #E50914, #ff4b2b);
         color: white;
         font-size: 18px;
+        font-weight: bold;
         border: none;
     }
 
     .stButton>button:hover {
-        background-color: #ff2e2e;
+        background: linear-gradient(to right, #ff4b2b, #E50914);
         color: white;
     }
 
     .movie-title {
         text-align: center;
-        font-size: 18px;
+        font-size: 17px;
         font-weight: bold;
         color: white;
         margin-top: 10px;
+        margin-bottom: 5px;
     }
+
+    .rating {
+        text-align: center;
+        color: gold;
+        font-size: 15px;
+    }
+
+    .overview {
+        color: #CCCCCC;
+        font-size: 13px;
+        text-align: center;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
 )
 
 
-def fetch_poster(movie_id):
+def fetch_movie_details(movie_id):
+
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US"
 
     data = requests.get(url).json()
@@ -62,12 +84,19 @@ def fetch_poster(movie_id):
     poster_path = data.get('poster_path')
 
     if poster_path:
-        return "https://image.tmdb.org/t/p/w500/" + poster_path
+        poster = "https://image.tmdb.org/t/p/w500/" + poster_path
+    else:
+        poster = "https://via.placeholder.com/500x750?text=No+Image"
 
-    return "https://via.placeholder.com/500x750?text=No+Image"
+    rating = data.get('vote_average', 'N/A')
+    release_date = data.get('release_date', 'Unknown')
+    overview = data.get('overview', 'No description available.')
+
+    return poster, rating, release_date, overview
 
 
 def recommend(movie):
+
     index = movies[movies['title'] == movie].index[0]
 
     distances = sorted(
@@ -76,16 +105,24 @@ def recommend(movie):
         key=lambda x: x[1]
     )
 
-    recommended_movie_names = []
-    recommended_movie_posters = []
+    recommended_movies = []
 
     for i in distances[1:6]:
+
         movie_id = movies.iloc[i[0]].movie_id
 
-        recommended_movie_posters.append(fetch_poster(movie_id))
-        recommended_movie_names.append(movies.iloc[i[0]].title)
+        poster, rating, release_date, overview = fetch_movie_details(movie_id)
 
-    return recommended_movie_names, recommended_movie_posters
+        recommended_movies.append({
+            'title': movies.iloc[i[0]].title,
+            'poster': poster,
+            'rating': rating,
+            'release_date': release_date,
+            'overview': overview
+        })
+
+    return recommended_movies
+
 
 movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
 movies = pd.DataFrame(movies_dict)
@@ -97,51 +134,72 @@ vectors = cv.fit_transform(movies['tags']).toarray()
 
 similarity = cosine_similarity(vectors)
 
-st.markdown("<h1>🎬 Movie Recommender System</h1>", unsafe_allow_html=True)
+
+st.markdown("<h1>🎬 CineMatch AI</h1>", unsafe_allow_html=True)
 
 st.markdown(
-    "<p style='text-align:center; color:gray;'>Find movies similar to your favorite ones 🍿</p>",
+    "<div class='subtitle'>Discover movies similar to your favorites 🍿</div>",
     unsafe_allow_html=True
 )
+
+
+st.sidebar.title("⚙️ About")
+
+st.sidebar.info(
+    "This Movie Recommender uses NLP, CountVectorizer, and Cosine Similarity to recommend similar movies."
+)
+
+st.sidebar.markdown("---")
+st.sidebar.write("Built using:")
+st.sidebar.write("✅ Python")
+st.sidebar.write("✅ Streamlit")
+st.sidebar.write("✅ Scikit-Learn")
+st.sidebar.write("✅ TMDB API")
+
 
 movie_list = movies['title'].values
 
 selected_movie = st.selectbox(
-    "Choose a movie",
+    "🎥 Search your favorite movie",
     movie_list
 )
 
 
-if st.button('Recommend Movies'):
+if st.button('🚀 Show Recommendations'):
 
-    with st.spinner('Finding best recommendations for you...'):
-        recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
+    with st.spinner('Analyzing movie patterns...'):
 
-        col1, col2, col3, col4, col5 = st.columns(5)
+        recommended_movies = recommend(selected_movie)
 
-        with col1:
-            st.image(recommended_movie_posters[0])
-            st.markdown(f"<div class='movie-title'>{recommended_movie_names[0]}</div>", unsafe_allow_html=True)
+        st.markdown("## Recommended Movies")
 
-        with col2:
-            st.image(recommended_movie_posters[1])
-            st.markdown(f"<div class='movie-title'>{recommended_movie_names[1]}</div>", unsafe_allow_html=True)
+        cols = st.columns(5)
 
-        with col3:
-            st.image(recommended_movie_posters[2])
-            st.markdown(f"<div class='movie-title'>{recommended_movie_names[2]}</div>", unsafe_allow_html=True)
+        for idx, movie in enumerate(recommended_movies):
 
-        with col4:
-            st.image(recommended_movie_posters[3])
-            st.markdown(f"<div class='movie-title'>{recommended_movie_names[3]}</div>", unsafe_allow_html=True)
+            with cols[idx]:
+                st.image(movie['poster'])
 
-        with col5:
-            st.image(recommended_movie_posters[4])
-            st.markdown(f"<div class='movie-title'>{recommended_movie_names[4]}</div>", unsafe_allow_html=True)
+                st.markdown(
+                    f"<div class='movie-title'>{movie['title']}</div>",
+                    unsafe_allow_html=True
+                )
+
+                st.markdown(
+                    f"<div class='rating'>⭐ {movie['rating']}</div>",
+                    unsafe_allow_html=True
+                )
+
+                st.caption(f"📅 {movie['release_date']}")
+
+                st.markdown(
+                    f"<div class='overview'>{movie['overview'][:120]}...</div>",
+                    unsafe_allow_html=True
+                )
 
 
 st.markdown("---")
 st.markdown(
-    "<p style='text-align:center; color:gray;'>Built with Streamlit ❤️</p>",
+    "<p style='text-align:center; color:gray;'>Made with ❤️ by Anurag</p>",
     unsafe_allow_html=True
 )
