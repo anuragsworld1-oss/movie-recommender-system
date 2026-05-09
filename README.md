@@ -1,76 +1,99 @@
-🎬 CineMatch AI — Movie Recommender System
+# 🎬 CineMatch AI — Movie Recommender System
 
-A Content-Based Movie Recommendation System powered by Machine Learning and NLP that suggests movies similar to a selected title using text vectorization and cosine similarity.
+A **Content-Based Movie Recommendation System** powered by Machine Learning and NLP that suggests movies similar to a selected title using text vectorization and cosine similarity.
 
-Built with Streamlit, integrated with TMDB API, and designed with a Netflix-style UI for an interactive user experience.
+Built with **Streamlit**, integrated with **TMDB API**, and designed with a Netflix-style UI for an interactive user experience.
 
-🚀 Live Demo
+---
 
-👉https://movie-recommender-system-69gsmwwnx4xrrt73guqyff.streamlit.app/#cine-match-ai
+# 🚀 Live Demo
 
-📸 Project Preview
-🏠 Home Interface
+👉  https://movie-recommender-system-69gsmwwnx4xrrt73guqyff.streamlit.app/#cine-match-ai
 
-🎯 Recommendations Output
+---
 
-💡 Problem Statement
+# 📸 Project Preview
+
+### 🏠 Home Interface
+![Home Interface](assets/homepage.png)
+
+### 🎯 Recommendations Output
+![Recommendations Output](assets/recommendation.png)
+
+---
+
+# 💡 Problem Statement
 
 With thousands of movies available on streaming platforms, users often struggle to find relevant content.
 
-This project solves that by building a smart recommendation engine that suggests movies based on content similarity.
+This project solves this by building a **smart recommendation engine** that suggests movies based on content similarity.
 
-⚙️ How It Works (Simple Explanation)
+---
 
-Each movie is transformed into a text-based feature vector using metadata like:
+# ⚙️ How It Works (Simple Explanation)
 
-Genres
-Keywords
-Cast
-Crew
-Overview
+Each movie is transformed into a **text-based feature vector** using metadata like:
 
-These are combined into a single "tag" representation.
+- Genres  
+- Keywords  
+- Cast  
+- Crew  
+- Overview  
 
-Then:
+These are combined into a single **"tag" representation**.
 
-similarity(A,B)=cos(θ)=
-∥A∥∥B∥
-A⋅B
-	​
+Then similarity is calculated as:
 
+:contentReference[oaicite:0]{index=0}
 
 The system computes similarity between movies and recommends the closest matches.
 
-🧠 Machine Learning Pipeline
-Data Collection (TMDB dataset)
-Data Cleaning & Preprocessing
-Feature Engineering (tags creation)
-Text Vectorization (CountVectorizer)
-Similarity Calculation (Cosine Similarity)
-Recommendation Engine
-Streamlit Deployment
-🛠️ Tech Stack
-🧑‍💻 Frontend
-Streamlit
-🧠 Machine Learning
-Scikit-learn
-NLP (Text Processing)
-CountVectorizer
-Cosine Similarity
-🌐 API Integration
-TMDB API (movie posters & metadata)
-📦 Libraries
-pandas
-numpy
-requests
-pickle
-sklearn
-📁 Project Structure
+---
+
+# 🧠 Machine Learning Pipeline
+
+- Data Collection (TMDB dataset)  
+- Data Cleaning & Preprocessing  
+- Feature Engineering (tags creation)  
+- Text Vectorization (CountVectorizer)  
+- Similarity Calculation (Cosine Similarity)  
+- Recommendation Engine  
+- Streamlit Deployment  
+
+---
+
+# 🛠️ Tech Stack
+
+## 🧑‍💻 Frontend
+- Streamlit  
+
+## 🧠 Machine Learning
+- Scikit-learn  
+- NLP (Text Processing)  
+- CountVectorizer  
+- Cosine Similarity  
+
+## 🌐 API Integration
+- TMDB API (movie posters & metadata)  
+
+## 📦 Libraries
+- pandas  
+- numpy  
+- requests  
+- pickle  
+- sklearn  
+
+---
+
+# 📁 Project Structure
+
+```text
 movie-recommender-system/
 │
 ├── app.py
 ├── movie_dict.pkl
 ├── movies.pkl
+│
 ├── assets/
 │   ├── homepage.png
 │   ├── recommendation.png
@@ -78,6 +101,7 @@ movie-recommender-system/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
+
 🚀 How to Run Locally
 1. Clone the repository
 git clone https://github.com/anuragsworld1-oss/movie-recommender-system.git
